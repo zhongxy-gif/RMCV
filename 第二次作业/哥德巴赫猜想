@@ -1,0 +1,22 @@
+#include<iostream> 
+using namespace std; 
+bool zhishu(int num) {          
+	if (num < 2) return false;          
+	if (num == 2) return true;            
+	for (int i = 2; i <num; i++) {                  
+		if (num % i == 0) return false;          
+	}          return true;  } 
+int main(){     
+	int N,h;     
+	cin>>N;     
+	h=(N-2)/2;       
+	for (int i = 1; i<=h; i++) {                  
+		int n = 2 * i + 2;         
+		for (int p = 2; p <= n / 2; p++) {                          
+			if (zhishu(p) && zhishu(n - p)) {                                               
+				cout << n << "=" << p << "+" <<n - p << endl;                                 
+				break;                          
+			}                 
+		}          
+	} 
+}
