@@ -1,0 +1,21 @@
+#include <iostream>  
+using namespace std;  
+void zhuanhuan(int n, int j)  {            
+  if (n == 0) return;     
+  zhuanhuan(n / j, j);                 
+  int s = n % j;     
+  if (s < 10)      
+  {                  
+    cout << s;          
+  }      
+  else          
+  {                      
+    cout << (char)('A' + s - 10);              
+  }     
+}     
+int main()  {          
+  int n, j;              
+  cin >> n >>j;                      
+  zhuanhuan(n,j);                   
+  return 0;  
+}
