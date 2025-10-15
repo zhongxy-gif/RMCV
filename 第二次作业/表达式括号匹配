@@ -1,0 +1,25 @@
+#include <iostream>
+#include <stack>
+using namespace std;
+int main() {
+    stack<char> bracketStack;
+    char c;
+    while (cin >> c && c != '@') {
+        if (c == '(') {
+            bracketStack.push(c);
+        }
+        else if (c == ')') {
+            if (bracketStack.empty()) {
+                cout << "NO" << endl;
+                return 0;
+            }
+            bracketStack.pop();
+        }
+    }
+    if (bracketStack.empty()) {
+        cout << "YES" << endl;
+    } else {
+        cout << "NO" << endl;
+    }
+    return 0;
+}
