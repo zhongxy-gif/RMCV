@@ -1,0 +1,92 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <unordered_map>
+#include <sstream>
+#include <string>
+
+using namespace std;
+
+int main() {
+    int commandCount;
+    cin >> commandCount;
+    cin.ignore(); 
+    unordered_map<int, vector<int>> sequences;
+    for (int i = 0; i < commandCount; ++i) {
+        string line;
+        getline(cin, line);
+        istringstream cmdStream(line);
+        string operation;
+        cmdStream >> operation;
+        
+        if (operation == "new") {
+            int id;
+            if (cmdStream >> id) { 
+                sequences[id] = vector<int>();
+            }
+        }
+        else if (operation == "add") {
+            int id, number;
+            if (cmdStream >> id >> number) {
+                if (sequences.find(id) == sequences.end()) {
+                    sequences[id] = vector<int>();
+                }
+                sequences[id].push_back(number);
+            }
+        }
+        else if (operation == "merge") {
+            int id1, id2;
+            if (cmdStream >> id1 >> id2 && id1 != id2) { 
+                if (sequences.find(id1) == sequences.end()) {
+                    sequences[id1] = vector<int>();
+                }
+                if (sequences.find(id2) == sequences.end()) {
+                    sequences[id2] = vector<int>();
+                }
+                auto& target = sequences[id1];
+                auto& source = sequences[id2];
+                
+         
+                target.reserve(target.size() + source.size());
+                target.insert(target.end(), source.begin(), source.end());
+                
+          
+                source.clear();
+            }
+        }
+        else if (operation == "unique") {
+            int id;
+            if (cmdStream >> id) {  
+                if (sequences.find(id) == sequences.end()) {
+                    sequences[id] = vector<int>();
+                }
+                
+                auto& seq = sequences[id];
+                sort(seq.begin(), seq.end());
+                auto lastUnique = unique(seq.begin(), seq.end());
+                seq.erase(lastUnique, seq.end());
+            }
+        }
+        else if (operation == "out") {
+            int id;
+            if (cmdStream >> id) {  
+                if (sequences.find(id) == sequences.end()) {
+                    sequences[id] = vector<int>();
+                }
+                
+                auto& seq = sequences[id];
+                sort(seq.begin(), seq.end());
+                for (size_t j = 0; j < seq.size(); ++j) {
+                    if (j > 0) {
+                        cout << " ";
+                    }
+                    cout << seq[j];
+                }
+                cout << "\n";
+            }
+        }
+    }
+    
+    return 0;
+}
+    
