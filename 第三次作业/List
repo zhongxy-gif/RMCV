@@ -1,92 +1,92 @@
 #include <iostream>
 #include <vector>
-#include <algorithm>
-#include <unordered_map>
-#include <sstream>
+#include <set>
+#include <unordered_set>
 #include <string>
+#include <sstream>
 
 using namespace std;
 
+struct Sequence {
+    multiset<int> data;  // 使用multiset存储数据，自动排序
+
+    void clear() {
+        data.clear();
+    }
+
+    void add(int num) {
+        data.insert(num);
+    }
+
+    void merge(Sequence& other) {
+        data.insert(other.data.begin(), other.data.end());
+        other.clear();
+    }
+
+    void unique() {
+        unordered_set<int> seen;
+        multiset<int> new_set;
+        for (int num : data) {
+            if (seen.find(num) == seen.end()) {
+                seen.insert(num);
+                new_set.insert(num);
+            }
+        }
+        data = new_set;
+    }
+
+    void out() {
+        if (data.empty()) {
+            cout << endl;
+            return;
+        }
+        auto it = data.begin();
+        cout << *it;
+        for (++it; it != data.end(); ++it) {
+            cout << " " << *it;
+        }
+        cout << endl;
+    }
+};
+
 int main() {
-    int commandCount;
-    cin >> commandCount;
-    cin.ignore(); 
-    unordered_map<int, vector<int>> sequences;
-    for (int i = 0; i < commandCount; ++i) {
-        string line;
+    int n;
+    cin >> n;
+    vector<Sequence> sequences(10000);  // 初始化10000个序列
+
+    string line;
+    getline(cin, line);  // 读取换行符
+
+    for (int i = 0; i < n; i++) {
         getline(cin, line);
-        istringstream cmdStream(line);
-        string operation;
-        cmdStream >> operation;
-        
-        if (operation == "new") {
+        stringstream ss(line);
+        string command;
+        ss >> command;
+
+        if (command == "new") {
             int id;
-            if (cmdStream >> id) { 
-                sequences[id] = vector<int>();
-            }
-        }
-        else if (operation == "add") {
-            int id, number;
-            if (cmdStream >> id >> number) {
-                if (sequences.find(id) == sequences.end()) {
-                    sequences[id] = vector<int>();
-                }
-                sequences[id].push_back(number);
-            }
-        }
-        else if (operation == "merge") {
+            ss >> id;
+            sequences[id].clear();
+        } else if (command == "add") {
+            int id, num;
+            ss >> id >> num;
+            sequences[id].add(num);
+        } else if (command == "merge") {
             int id1, id2;
-            if (cmdStream >> id1 >> id2 && id1 != id2) { 
-                if (sequences.find(id1) == sequences.end()) {
-                    sequences[id1] = vector<int>();
-                }
-                if (sequences.find(id2) == sequences.end()) {
-                    sequences[id2] = vector<int>();
-                }
-                auto& target = sequences[id1];
-                auto& source = sequences[id2];
-                
-         
-                target.reserve(target.size() + source.size());
-                target.insert(target.end(), source.begin(), source.end());
-                
-          
-                source.clear();
-            }
-        }
-        else if (operation == "unique") {
+            ss >> id1 >> id2;
+            if (id1 == id2) continue;
+            sequences[id1].merge(sequences[id2]);
+        } else if (command == "unique") {
             int id;
-            if (cmdStream >> id) {  
-                if (sequences.find(id) == sequences.end()) {
-                    sequences[id] = vector<int>();
-                }
-                
-                auto& seq = sequences[id];
-                sort(seq.begin(), seq.end());
-                auto lastUnique = unique(seq.begin(), seq.end());
-                seq.erase(lastUnique, seq.end());
-            }
-        }
-        else if (operation == "out") {
+            ss >> id;
+            sequences[id].unique();
+        } else if (command == "out") {
             int id;
-            if (cmdStream >> id) {  
-                if (sequences.find(id) == sequences.end()) {
-                    sequences[id] = vector<int>();
-                }
-                
-                auto& seq = sequences[id];
-                sort(seq.begin(), seq.end());
-                for (size_t j = 0; j < seq.size(); ++j) {
-                    if (j > 0) {
-                        cout << " ";
-                    }
-                    cout << seq[j];
-                }
-                cout << "\n";
-            }
+            ss >> id;
+            sequences[id].out();
         }
     }
-    
+
     return 0;
 }
     
