@@ -1,0 +1,165 @@
+#include <iostream>
+#include <iomanip>
+#include <vector>
+#include <string>
+#include <sstream>
+
+using namespace std;
+
+int main() {
+    int T;
+    cin >> T;
+    
+    for (int caseNum = 1; caseNum <= T; ++caseNum) {
+        int M;
+        cin >> M;
+        vector<int> life_values(5);
+        for (int i = 0; i < 5; ++i) {
+            cin >> life_values[i];
+        }
+        
+        // 初始化红方司令部
+        int red_life = M;
+        vector<int> red_order = {2, 3, 4, 1, 0}; // iceman, lion, wolf, ninja, dragon
+        int red_index = 0;
+        vector<int> red_counts(5, 0); // dragon, ninja, iceman, lion, wolf
+        int red_total = 0;
+        bool red_stopped = false;
+        
+        // 初始化蓝方司令部
+        int blue_life = M;
+        vector<int> blue_order = {3, 0, 1, 2, 4}; // lion, dragon, ninja, iceman, wolf
+        int blue_index = 0;
+        vector<int> blue_counts(5, 0);
+        int blue_total = 0;
+        bool blue_stopped = false;
+        
+        // 类型和武器名称
+        vector<string> type_names = {"dragon", "ninja", "iceman", "lion", "wolf"};
+        vector<string> weapon_names = {"sword", "bomb", "arrow"};
+        
+        int hour = 0;
+        cout << "Case:" << caseNum << endl;
+        
+        while (!red_stopped || !blue_stopped) {
+            // 创建时间字符串（三位数）
+            ostringstream time_oss;
+            time_oss << setfill('0') << setw(3) << hour;
+            string time_str = time_oss.str();
+            
+            // 处理红方司令部
+            if (!red_stopped) {
+                int start_index = red_index;
+                bool made = false;
+                for (int tried = 0; tried < 5; ++tried) {
+                    int type_idx = red_order[red_index];
+                    if (red_life >= life_values[type_idx]) {
+                        // 制造武士
+                        int cost = life_values[type_idx];
+                        red_life -= cost;
+                        red_counts[type_idx]++;
+                        int warrior_id = ++red_total;
+                        string type_name = type_names[type_idx];
+                        
+                        // 输出降生事件（带时间前缀）
+                        cout << time_str << " red " << type_name << " " << warrior_id 
+                             << " born with strength " << cost << ","
+                             << red_counts[type_idx] << " " << type_name 
+                             << " in red headquarter" << endl;
+                        
+                        // 额外输出（不带时间前缀）
+                        if (type_idx == 0) { // dragon
+                            int weapon_id = warrior_id % 3;
+                            double morale = static_cast<double>(red_life) / cost;
+                            cout << "It has a " << weapon_names[weapon_id] 
+                                 << ",and it's morale is " << fixed << setprecision(2) 
+                                 << morale << endl;
+                        } else if (type_idx == 1) { // ninja
+                            int weapon_id1 = warrior_id % 3;
+                            int weapon_id2 = (warrior_id + 1) % 3;
+                            cout << "It has a " << weapon_names[weapon_id1] 
+                                 << " and a " << weapon_names[weapon_id2] << endl;
+                        } else if (type_idx == 2) { // iceman
+                            int weapon_id = warrior_id % 3;
+                            cout << "It has a " << weapon_names[weapon_id] << endl;
+                        } else if (type_idx == 3) { // lion
+                            cout << "It's loyalty is " << red_life << endl;
+                        }
+                        
+                        // 更新索引并跳出循环
+                        red_index = (red_index + 1) % 5;
+                        made = true;
+                        break;
+                    }
+                    // 尝试下一个类型
+                    red_index = (red_index + 1) % 5;
+                }
+                
+                if (!made) {
+                    red_stopped = true;
+                    // 输出停止事件（带时间前缀）
+                    cout << time_str << " red headquarter stops making warriors" << endl;
+                }
+            }
+            
+            // 处理蓝方司令部
+            if (!blue_stopped) {
+                int start_index = blue_index;
+                bool made = false;
+                for (int tried = 0; tried < 5; ++tried) {
+                    int type_idx = blue_order[blue_index];
+                    if (blue_life >= life_values[type_idx]) {
+                        // 制造武士
+                        int cost = life_values[type_idx];
+                        blue_life -= cost;
+                        blue_counts[type_idx]++;
+                        int warrior_id = ++blue_total;
+                        string type_name = type_names[type_idx];
+                        
+                        // 输出降生事件（带时间前缀）
+                        cout << time_str << " blue " << type_name << " " << warrior_id 
+                             << " born with strength " << cost << ","
+                             << blue_counts[type_idx] << " " << type_name 
+                             << " in blue headquarter" << endl;
+                        
+                        // 额外输出（不带时间前缀）
+                        if (type_idx == 0) { // dragon
+                            int weapon_id = warrior_id % 3;
+                            double morale = static_cast<double>(blue_life) / cost;
+                            cout << "It has a " << weapon_names[weapon_id] 
+                                 << ",and it's morale is " << fixed << setprecision(2) 
+                                 << morale << endl;
+                        } else if (type_idx == 1) { // ninja
+                            int weapon_id1 = warrior_id % 3;
+                            int weapon_id2 = (warrior_id + 1) % 3;
+                            cout << "It has a " << weapon_names[weapon_id1] 
+                                 << " and a " << weapon_names[weapon_id2] << endl;
+                        } else if (type_idx == 2) { // iceman
+                            int weapon_id = warrior_id % 3;
+                            cout << "It has a " << weapon_names[weapon_id] << endl;
+                        } else if (type_idx == 3) { // lion
+                            cout << "It's loyalty is " << blue_life << endl;
+                        }
+                        
+                        // 更新索引并跳出循环
+                        blue_index = (blue_index + 1) % 5;
+                        made = true;
+                        break;
+                    }
+                    // 尝试下一个类型
+                    blue_index = (blue_index + 1) % 5;
+                }
+                
+                if (!made) {
+                    blue_stopped = true;
+                    // 输出停止事件（带时间前缀）
+                    cout << time_str << " blue headquarter stops making warriors" << endl;
+                }
+            }
+            
+            hour++;
+        }
+    }
+    
+    return 0;
+}
